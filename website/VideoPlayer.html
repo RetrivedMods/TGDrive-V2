@@ -13,7 +13,8 @@
     <!-- Custom CSS -->
     <style>
         body {
-            background-color: #f4f4f4;
+            background-color: #121212;
+            color: #ddd;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -26,8 +27,8 @@
         .video-container {
             width: 90%;
             max-width: 960px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.7);
+            border-radius: 12px;
             overflow: hidden;
             background-color: #000;
         }
@@ -37,9 +38,10 @@
             display: flex;
             justify-content: center;
             gap: 15px;
+            flex-wrap: wrap;
         }
 
-        .copy-button {
+        .action-button, .quality-button, .download-button {
             padding: 12px 25px;
             font-size: 16px;
             font-weight: bold;
@@ -51,13 +53,21 @@
             transition: all 0.3s ease;
         }
 
-        .copy-button:hover {
+        .action-button:hover, .quality-button:hover, .download-button:hover {
             background-color: #0056b3;
             transform: scale(1.05);
         }
 
-        .copy-button:active {
+        .action-button:active, .quality-button:active, .download-button:active {
             transform: scale(1);
+        }
+
+        select {
+            padding: 8px;
+            background-color: #333;
+            color: #fff;
+            border: 1px solid #444;
+            border-radius: 5px;
         }
 
         footer {
@@ -66,13 +76,18 @@
             color: #777;
             font-size: 14px;
         }
+
+        .video-player {
+            width: 100%;
+        }
+
     </style>
 </head>
 
 <body>
     <!-- Video Player Container -->
     <div class="video-container">
-        <video id="my-player" class="video-js vjs-fluid vjs-big-play-centered" controls preload="auto" data-setup='{
+        <video id="my-player" class="video-js vjs-fluid vjs-big-play-centered video-player" controls preload="auto" data-setup='{
                 "playbackRates": [0.5, 1, 1.5, 2],
                 "controlBar": {
                     "pictureInPictureToggle": true
@@ -88,10 +103,21 @@
         </video>
     </div>
 
-    <!-- Buttons for Stream and Download URL -->
+    <!-- Video Controls -->
     <div class="buttons-container">
-        <button class="copy-button" onclick="copyStreamUrl()">Copy Stream URL</button>
-        <button class="copy-button" onclick="copyDownloadUrl()">Copy Download URL</button>
+        <button class="action-button" onclick="openInVLC()">Play in VLC</button>
+        <button class="action-button" onclick="openInMXPlayer()">Play in MX Player</button>
+        <select class="quality-button" onchange="changeQuality(event)">
+            <option value="high">High Quality</option>
+            <option value="medium">Medium Quality</option>
+            <option value="low">Low Quality</option>
+        </select>
+        <select class="action-button" onchange="changeAudioTrack(event)">
+            <option value="track1">English</option>
+            <option value="track2">Spanish</option>
+            <option value="track3">French</option>
+        </select>
+        <button class="download-button" onclick="downloadVideo()">Download Video</button>
     </div>
 
     <!-- Footer -->
@@ -101,42 +127,56 @@
 
     <!-- JavaScript -->
     <script>
-        // Get download URL from the query string
         const downloadUrl = (new URL(window.location.href)).searchParams.get('url');
-        document.getElementById('video-src').src = downloadUrl;
+        const videoElement = document.getElementById('my-player');
+        const videoSource = document.getElementById('video-src');
 
-        // Copy to Clipboard Function
-        function copyTextToClipboard(text) {
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(text).then(() => {
-                    alert('Link copied to clipboard!');
-                }).catch(err => {
-                    console.error('Could not copy text: ', err);
-                });
-            } else {
-                const textArea = document.createElement('textarea');
-                textArea.value = text;
-                document.body.appendChild(textArea);
-                textArea.focus();
-                textArea.select();
-                try {
-                    document.execCommand('copy');
-                    alert('Link copied to clipboard!');
-                } catch (err) {
-                    console.error('Fallback: Unable to copy text', err);
+        // Set the initial video source URL
+        videoSource.src = downloadUrl;
+        videoElement.load();
+
+        // Open Video in VLC
+        function openInVLC() {
+            window.open('vlc://' + downloadUrl, '_blank');
+        }
+
+        // Open Video in MX Player
+        function openInMXPlayer() {
+            window.open('mxplayer://' + downloadUrl, '_blank');
+        }
+
+        // Change Video Quality
+        function changeQuality(event) {
+            const selectedQuality = event.target.value;
+            if (selectedQuality === 'high') {
+                videoSource.src = downloadUrl;
+            } else if (selectedQuality === 'medium') {
+                videoSource.src = downloadUrl.replace('.mp4', '_medium.mp4');
+            } else if (selectedQuality === 'low') {
+                videoSource.src = downloadUrl.replace('.mp4', '_low.mp4');
+            }
+            videoElement.load();
+        }
+
+        // Change Audio Track
+        function changeAudioTrack(event) {
+            const selectedTrack = event.target.value;
+            const tracks = videoElement.textTracks;
+            for (let i = 0; i < tracks.length; i++) {
+                if (tracks[i].label === selectedTrack) {
+                    tracks[i].mode = 'showing';
+                } else {
+                    tracks[i].mode = 'disabled';
                 }
-                document.body.removeChild(textArea);
             }
         }
 
-        // Copy Stream URL
-        function copyStreamUrl() {
-            copyTextToClipboard(window.location.href);
-        }
-
-        // Copy Download URL
-        function copyDownloadUrl() {
-            copyTextToClipboard(downloadUrl);
+        // Download Video
+        function downloadVideo() {
+            const link = document.createElement('a');
+            link.href = downloadUrl;
+            link.download = downloadUrl.split('/').pop();
+            link.click();
         }
     </script>
 </body>
