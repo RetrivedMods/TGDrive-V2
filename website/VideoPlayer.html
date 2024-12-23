@@ -127,33 +127,36 @@
 
     <!-- JavaScript -->
     <script>
-        const downloadUrl = (new URL(window.location.href)).searchParams.get('url');
+        // Get the URL from the query string
+        const urlParams = new URLSearchParams(window.location.search);
+        const videoUrl = urlParams.get('url');
+
         const videoElement = document.getElementById('my-player');
         const videoSource = document.getElementById('video-src');
 
-        // Set the initial video source URL
-        videoSource.src = downloadUrl;
+        // Set the video source URL from the query string
+        videoSource.src = videoUrl;
         videoElement.load();
 
-        // Open Video in VLC
+        // Play Video in VLC
         function openInVLC() {
-            window.open('vlc://' + downloadUrl, '_blank');
+            window.open('vlc://' + videoUrl, '_blank');
         }
 
-        // Open Video in MX Player
+        // Play Video in MX Player
         function openInMXPlayer() {
-            window.open('mxplayer://' + downloadUrl, '_blank');
+            window.open('mxplayer://' + videoUrl, '_blank');
         }
 
         // Change Video Quality
         function changeQuality(event) {
             const selectedQuality = event.target.value;
             if (selectedQuality === 'high') {
-                videoSource.src = downloadUrl;
+                videoSource.src = videoUrl;
             } else if (selectedQuality === 'medium') {
-                videoSource.src = downloadUrl.replace('.mp4', '_medium.mp4');
+                videoSource.src = videoUrl.replace('.mp4', '_medium.mp4');
             } else if (selectedQuality === 'low') {
-                videoSource.src = downloadUrl.replace('.mp4', '_low.mp4');
+                videoSource.src = videoUrl.replace('.mp4', '_low.mp4');
             }
             videoElement.load();
         }
@@ -174,8 +177,8 @@
         // Download Video
         function downloadVideo() {
             const link = document.createElement('a');
-            link.href = downloadUrl;
-            link.download = downloadUrl.split('/').pop();
+            link.href = videoUrl;
+            link.download = videoUrl.split('/').pop();
             link.click();
         }
     </script>
