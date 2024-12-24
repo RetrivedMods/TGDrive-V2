@@ -112,10 +112,7 @@
             <option value="medium">Medium Quality</option>
             <option value="low">Low Quality</option>
         </select>
-        <select class="action-button" onchange="changeAudioTrack(event)">
-            <option value="track1">English</option>
-            <option value="track2">Spanish</option>
-            <option value="track3">French</option>
+        <select id="audio-tracks" class="action-button" onchange="changeAudioTrack(event)">
         </select>
         <button class="download-button" onclick="downloadVideo()">Download Video</button>
     </div>
@@ -133,10 +130,30 @@
 
         const videoElement = document.getElementById('my-player');
         const videoSource = document.getElementById('video-src');
+        const audioTracksDropdown = document.getElementById('audio-tracks');
 
         // Set the video source URL from the query string
         videoSource.src = videoUrl;
         videoElement.load();
+
+        // Populate audio tracks dynamically
+        videoElement.addEventListener('loadedmetadata', () => {
+            const tracks = videoElement.audioTracks;
+            if (tracks) {
+                for (let i = 0; i < tracks.length; i++) {
+                    const track = tracks[i];
+                    const option = document.createElement('option');
+                    option.value = i;
+                    option.textContent = track.label || `Track ${i + 1}`;
+                    audioTracksDropdown.appendChild(option);
+                }
+            } else {
+                const option = document.createElement('option');
+                option.textContent = 'No audio tracks available';
+                option.disabled = true;
+                audioTracksDropdown.appendChild(option);
+            }
+        });
 
         // Play Video in VLC
         function openInVLC() {
@@ -163,13 +180,11 @@
 
         // Change Audio Track
         function changeAudioTrack(event) {
-            const selectedTrack = event.target.value;
-            const tracks = videoElement.textTracks;
-            for (let i = 0; i < tracks.length; i++) {
-                if (tracks[i].label === selectedTrack) {
-                    tracks[i].mode = 'showing';
-                } else {
-                    tracks[i].mode = 'disabled';
+            const selectedTrackIndex = parseInt(event.target.value, 10);
+            const tracks = videoElement.audioTracks;
+            if (tracks) {
+                for (let i = 0; i < tracks.length; i++) {
+                    tracks[i].enabled = (i === selectedTrackIndex);
                 }
             }
         }
