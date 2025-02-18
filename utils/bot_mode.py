@@ -166,7 +166,7 @@ async def file_handler(client: Client, message: Message):
     )
 
     # Generate a unique path for the file
-    unique_file_path = f"/{BOT_MODE.current_folder}/{file.file_name}"
+    unique_file_path = {file.path}"
 
     # Create the shareable URL following the structure you provided
     shareable_url = f"https://jolly-lobster-thunderlinks-43a7df8c.koyeb.app/stream?url=https://jolly-lobster-thunderlinks-43a7df8c.koyeb.app/file?path={unique_file_path}"
@@ -177,7 +177,7 @@ async def file_handler(client: Client, message: Message):
                              
 **File Name:** {file.file_name}
 **Folder:** {BOT_MODE.current_folder_name}
-**Share Link:** [Click here to view the file]({shareable_url})
+**Watch Now:** [Click here to view]({shareable_url})
 """
     )
 
