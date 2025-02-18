@@ -132,6 +132,18 @@ async def set_folder_callback(client: Client, callback_query: Message):
 
 
 @main_bot.on_message(
+    filters.command("current_folder")
+    & filters.private
+    & filters.user(config.TELEGRAM_ADMIN_IDS),
+)
+async def current_folder_handler(client: Client, message: Message):
+    global BOT_MODE
+
+    await message.reply_text(f"Current Folder: {BOT_MODE.current_folder_name}")
+
+
+# Handling when any file is sent to the bot
+@main_bot.on_message(
     filters.private
     & filters.user(config.TELEGRAM_ADMIN_IDS)
     & (
@@ -145,50 +157,41 @@ async def set_folder_callback(client: Client, callback_query: Message):
 async def file_handler(client: Client, message: Message):
     global BOT_MODE, DRIVE_DATA
 
-    try:
-        # Copy the message to the storage channel
-        copied_message = await message.copy(config.STORAGE_CHANNEL)
+    # Copy the message to the storage channel
+    copied_message = await message.copy(config.STORAGE_CHANNEL)
 
-        # Determine the file type
-        file = (
-            copied_message.document
-            or copied_message.video
-            or copied_message.audio
-            or copied_message.photo
-            or copied_message.sticker
-        )
+    # Determine the file type
+    file = (
+        copied_message.document
+        or copied_message.video
+        or copied_message.audio
+        or copied_message.photo
+        or copied_message.sticker
+    )
 
-        # Upload the file to the TG Drive
-        if file:
-            DRIVE_DATA.new_file(
-                BOT_MODE.current_folder,
-                file.file_name,
-                copied_message.id,
-                file.file_size,
-            )
+    # Assuming file.path gives the relative path of the file
+    file_path = file.path  # This should return the file path as "/MZLUA8" or similar
 
-            # Generate a unique path for the file
-            unique_file_path = f"{file.path}"  # Fixed string formatting
+    # Upload the file to the TG Drive (you need to call your actual function to upload the file)
+    DRIVE_DATA.new_file(
+        BOT_MODE.current_folder,
+        file.file_name,
+        copied_message.id,
+        file.file_size,
+    )
 
-            # Create the shareable URL following the structure you provided
-            shareable_url = f"https://jolly-lobster-thunderlinks-43a7df8c.koyeb.app/stream?url=https://jolly-lobster-thunderlinks-43a7df8c.koyeb.app/file?path={unique_file_path}"
+    # Construct the shareable URL using the file path
+    file_url = f"https://jolly-lobster-thunderlinks-43a7df8c.koyeb.app/stream?url=https://jolly-lobster-thunderlinks-43a7df8c.koyeb.app/file?path={file_path}"
 
-            # Send the success message along with the generated URL
-            message_text = f"""File Uploaded Successfully To Your TG Drive Website
-                                 
+    # Send the success message along with the generated URL
+    await message.reply_text(
+        f"""✅ File Uploaded Successfully To Your TG Drive Website
+                             
 **File Name:** {file.file_name}
 **Folder:** {BOT_MODE.current_folder_name}
-**Watch Now:** [Click here to view]({shareable_url})
+**Watch Now:** [Click here to view]({file_url})
 """
-            await message.reply_text(message_text)
-        else:
-            logger.error("No valid file detected in the message.")
-            await message.reply_text("Failed to upload the file. Please try again.")
-    
-    except Exception as e:
-        logger.error(f"Error in file_handler: {e}")
-        await message.reply_text(f"An error occurred: {e}. Please try again later.")
-
+    )
 
 async def start_bot_mode(d, b):
     global DRIVE_DATA, BOT_MODE
@@ -201,6 +204,5 @@ async def start_bot_mode(d, b):
     await main_bot.send_message(
         config.STORAGE_CHANNEL, "Main Bot Started -> TG Drive's Bot Mode Enabled"
     )
-
     logger.info("Main Bot Started")
     logger.info("TG Drive's Bot Mode Enabled")
