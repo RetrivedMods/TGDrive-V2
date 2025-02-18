@@ -157,29 +157,29 @@ async def file_handler(client: Client, message: Message):
         or copied_message.sticker
     )
 
-    # Upload the file to the TG Drive
-    DRIVE_DATA.new_file(
-        BOT_MODE.current_folder,
-        file.file_name,
-        copied_message.id,
-        file.file_size,
-    )
+# Upload the file to the TG Drive
+DRIVE_DATA.new_file(
+    BOT_MODE.current_folder,
+    file.file_name,
+    copied_message.id,
+    file.file_size,
+)
 
-    # Generate a unique path for the file
-    unique_file_path = {file.path}"
+# Generate a unique path for the file
+unique_file_path = f"{file.path}"  # Fixed string formatting
 
-    # Create the shareable URL following the structure you provided
-    shareable_url = f"https://jolly-lobster-thunderlinks-43a7df8c.koyeb.app/stream?url=https://jolly-lobster-thunderlinks-43a7df8c.koyeb.app/file?path={unique_file_path}"
+# Create the shareable URL following the structure you provided
+shareable_url = f"https://jolly-lobster-thunderlinks-43a7df8c.koyeb.app/stream?url=https://jolly-lobster-thunderlinks-43a7df8c.koyeb.app/file?path={unique_file_path}"
 
-    # Send the success message along with the generated URL
-    await message.reply_text(
-        f"""✅ File Uploaded Successfully To Your TG Drive Website
+# Send the success message along with the generated URL
+await message.reply_text(
+    f"""✅ File Uploaded Successfully To Your TG Drive Website
                              
 **File Name:** {file.file_name}
 **Folder:** {BOT_MODE.current_folder_name}
 **Watch Now:** [Click here to view]({shareable_url})
 """
-    )
+)
 
     DRIVE_DATA.new_file(
         BOT_MODE.current_folder,
