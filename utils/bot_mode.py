@@ -132,18 +132,6 @@ async def set_folder_callback(client: Client, callback_query: Message):
 
 
 @main_bot.on_message(
-    filters.command("current_folder")
-    & filters.private
-    & filters.user(config.TELEGRAM_ADMIN_IDS),
-)
-async def current_folder_handler(client: Client, message: Message):
-    global BOT_MODE
-
-    await message.reply_text(f"Current Folder: {BOT_MODE.current_folder_name}")
-
-
-# Handling when any file is sent to the bot
-@main_bot.on_message(
     filters.private
     & filters.user(config.TELEGRAM_ADMIN_IDS)
     & (
@@ -157,13 +145,40 @@ async def current_folder_handler(client: Client, message: Message):
 async def file_handler(client: Client, message: Message):
     global BOT_MODE, DRIVE_DATA
 
+    # Copy the message to the storage channel
     copied_message = await message.copy(config.STORAGE_CHANNEL)
+
+    # Determine the file type
     file = (
         copied_message.document
         or copied_message.video
         or copied_message.audio
         or copied_message.photo
         or copied_message.sticker
+    )
+
+    # Upload the file to the TG Drive
+    DRIVE_DATA.new_file(
+        BOT_MODE.current_folder,
+        file.file_name,
+        copied_message.id,
+        file.file_size,
+    )
+
+    # Generate a unique path for the file
+    unique_file_path = f"/{BOT_MODE.current_folder}/{file.file_name}"
+
+    # Create the shareable URL following the structure you provided
+    shareable_url = f"https://jolly-lobster-thunderlinks-43a7df8c.koyeb.app/stream?url=https://jolly-lobster-thunderlinks-43a7df8c.koyeb.app/file?path={unique_file_path}"
+
+    # Send the success message along with the generated URL
+    await message.reply_text(
+        f"""✅ File Uploaded Successfully To Your TG Drive Website
+                             
+**File Name:** {file.file_name}
+**Folder:** {BOT_MODE.current_folder_name}
+**Share Link:** [Click here to view the file]({shareable_url})
+"""
     )
 
     DRIVE_DATA.new_file(
