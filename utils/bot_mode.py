@@ -36,7 +36,7 @@ main_bot = Client(
     workdir=session_cache_path,
 )
 
-
+# Command to show start message
 @main_bot.on_message(
     filters.command(["start", "help"])
     & filters.private
@@ -46,6 +46,7 @@ async def start_handler(client: Client, message: Message):
     await message.reply_text(START_CMD)
 
 
+# Command to set folder for file uploads
 @main_bot.on_message(
     filters.command("set_folder")
     & filters.private
@@ -107,6 +108,7 @@ async def set_folder_handler(client: Client, message: Message):
     )
 
 
+# Callback handler for setting the folder
 @main_bot.on_callback_query(
     filters.user(config.TELEGRAM_ADMIN_IDS) & filters.regex(r"set_folder_")
 )
@@ -131,6 +133,7 @@ async def set_folder_callback(client: Client, callback_query: Message):
     )
 
 
+# Handling file uploads
 @main_bot.on_message(
     filters.private
     & filters.user(config.TELEGRAM_ADMIN_IDS)
@@ -185,6 +188,7 @@ async def file_handler(client: Client, message: Message):
     )
 
 
+# Function to start the bot
 async def start_bot_mode(d, b):
     global DRIVE_DATA, BOT_MODE
     DRIVE_DATA = d
