@@ -157,10 +157,7 @@ async def current_folder_handler(client: Client, message: Message):
 async def file_handler(client: Client, message: Message):
     global BOT_MODE, DRIVE_DATA
 
-    # Copy the message to the storage channel
     copied_message = await message.copy(config.STORAGE_CHANNEL)
-
-    # Determine the file type
     file = (
         copied_message.document
         or copied_message.video
@@ -169,10 +166,6 @@ async def file_handler(client: Client, message: Message):
         or copied_message.sticker
     )
 
-    # Assuming file.path gives the relative path of the file
-    file_path = file.path  # This should return the file path as "/MZLUA8" or similar
-
-    # Upload the file to the TG Drive (you need to call your actual function to upload the file)
     DRIVE_DATA.new_file(
         BOT_MODE.current_folder,
         file.file_name,
@@ -180,18 +173,17 @@ async def file_handler(client: Client, message: Message):
         file.file_size,
     )
 
-    # Construct the shareable URL using the file path
-    file_url = f"https://jolly-lobster-thunderlinks-43a7df8c.koyeb.app/stream?url=https://jolly-lobster-thunderlinks-43a7df8c.koyeb.app/file?path={file_path}"
-
-    # Send the success message along with the generated URL
     await message.reply_text(
         f"""✅ File Uploaded Successfully To Your TG Drive Website
                              
 **File Name:** {file.file_name}
+
+**File Link:** https://jolly-lobster-thunderlinks-43a7df8c.koyeb.app/stream?url=https://jolly-lobster-thunderlinks-43a7df8c.koyeb.app/file?path={file.path}
+
 **Folder:** {BOT_MODE.current_folder_name}
-**Watch Now:** [Click here to view]({file_url})
 """
     )
+
 
 async def start_bot_mode(d, b):
     global DRIVE_DATA, BOT_MODE
