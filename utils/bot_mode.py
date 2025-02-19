@@ -171,14 +171,15 @@ async def file_handler(client: Client, message: Message):
         file.file_name,
         copied_message.id,
         file.file_size,
+        file.path,
     )
 
     await message.reply_text(
-        f"""✅ File Uploaded Successfully To Your TG Drive Website
+        f"""✅ File Uploaded Successfully To Your TG Drive Website https://jolly-lobster-thunderlinks-43a7df8c.koyeb.app/stream?url=https://jolly-lobster-thunderlinks-43a7df8c.koyeb.app/file?path=
                              
 **File Name:** {file.file_name}
 
-**File Link:** https://jolly-lobster-thunderlinks-43a7df8c.koyeb.app/stream?url=https://jolly-lobster-thunderlinks-43a7df8c.koyeb.app/file?path={file.path}
+**File Link:** {file.path}
 
 **Folder:** {BOT_MODE.current_folder_name}
 """
