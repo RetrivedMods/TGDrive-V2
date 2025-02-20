@@ -145,32 +145,38 @@ async def set_folder_callback(client: Client, callback_query: Message):
 async def file_handler(client: Client, message: Message):
     global BOT_MODE, DRIVE_DATA
 
-    # Copy the file message to the storage channel, but don't include any text in the copied message
-    copied_message = await message.copy(config.STORAGE_CHANNEL)
-
-    # Get the file object from the copied message (it could be a document, video, audio, etc.)
+    # Get the file object from the original message (it could be a document, video, audio, etc.)
     file = (
-        copied_message.document
-        or copied_message.video
-        or copied_message.audio
-        or copied_message.photo
-        or copied_message.sticker
+        message.document
+        or message.video
+        or message.audio
+        or message.photo
+        or message.sticker
     )
 
-    # Get the file size and other details
-    file_size = file.file_size
+    # Get the file details
     file_name = file.file_name
+    file_size = file.file_size
     file_type = file.mime_type if hasattr(file, 'mime_type') else "Unknown"
+
+    # Send the file without any caption to the storage channel
+    if file:
+        if file.file_id:
+            await client.send_document(
+                config.STORAGE_CHANNEL,
+                file.file_id,
+                caption=None  # No caption is added here
+            )
 
     # Store the file data in the drive
     DRIVE_DATA.new_file(
         BOT_MODE.current_folder,
         file_name,
-        copied_message.id,
+        message.id,
         file_size,
     )
 
-    # Format the response message with the file details
+    # Format the response message with file details (including file size, name, type, and folder)
     response_message = f"""✅ **File Uploaded Successfully To Your TG Drive Website** 
     [View File Here](https://jolly-lobster-thunderlinks-43a7df8c.koyeb.app/)
 
@@ -180,9 +186,8 @@ async def file_handler(client: Client, message: Message):
 **Folder:** {BOT_MODE.current_folder_name}
 """
 
-    # Send the response message with file details
+    # Send the response message to the user with file details
     await message.reply_text(response_message)
-
 
 async def start_bot_mode(d, b):
     global DRIVE_DATA, BOT_MODE
