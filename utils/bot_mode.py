@@ -174,14 +174,15 @@ async def file_handler(client: Client, message: Message):
     )
 
     await message.reply_text(
-        f"""✅ File Uploaded Successfully To Your TG Drive Website
+        f"""✅ File Uploaded Successfully To Your TG Drive Website 
+        https://jolly-lobster-thunderlinks-43a7df8c.koyeb.app/
+        
                              
 **File Name:** {file.file_name}
-**File Size:** {file.gile_size}
 **Folder:** {BOT_MODE.current_folder_name}
-Click here to visit: [Visit the link](https://jolly-lobster-thunderlinks-43a7df8c.koyeb.app/?path=/)
 """
     )
+
 
 async def start_bot_mode(d, b):
     global DRIVE_DATA, BOT_MODE
