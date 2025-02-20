@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TG Drive - Advanced Video Player</title>
+    <title>HomieStreamer</title>
 
     <!-- Video.js Library -->
     <link href="//vjs.zencdn.net/8.3.0/video-js.min.css" rel="stylesheet">
@@ -12,21 +12,53 @@
 
     <!-- Custom CSS -->
     <style>
+        /* Smooth Scrolling for the entire page */
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
             background-color: #121212;
             color: #ddd;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            height: 100vh;
+            justify-content: flex-start;
+            height: 100%;
             margin: 0;
             font-family: 'Roboto', Arial, sans-serif;
+            overflow: auto;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Red Themed Header */
+        header {
+            background-color: #ff4c4c;
+            width: 100%;
+            padding: 20px 0;
+            text-align: center;
+            color: white;
+            font-size: 32px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Logo Style */
+        .logo {
+            width: 50px; /* Adjust the size of the logo */
+            margin-right: 15px; /* Space between the logo and the text */
         }
 
         .video-container {
-            width: 90%;
+            width: 100%;
             max-width: 960px;
+            margin-top: 20px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.7);
             border-radius: 12px;
             overflow: hidden;
@@ -41,24 +73,42 @@
             flex-wrap: wrap;
         }
 
-        .action-button, .quality-button, .download-button {
+        .action-button,
+        .download-button,
+        .sponsor-button {
             padding: 12px 25px;
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
-            background-color: #007bff;
+            background-color: #e60000;
             color: white;
             border: none;
             border-radius: 5px;
             transition: all 0.3s ease;
         }
 
-        .action-button:hover, .quality-button:hover, .download-button:hover {
-            background-color: #0056b3;
+        .action-button:hover,
+        .download-button:hover,
+        .sponsor-button:hover {
+            background-color: #b30000;
             transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.8);
+            animation: glowing 1.5s infinite alternate;
         }
 
-        .action-button:active, .quality-button:active, .download-button:active {
+        @keyframes glowing {
+            0% {
+                box-shadow: 0 0 5px rgba(255, 0, 0, 0.8), 0 0 10px rgba(255, 0, 0, 0.7);
+            }
+
+            100% {
+                box-shadow: 0 0 10px rgba(255, 0, 0, 1), 0 0 20px rgba(255, 0, 0, 1);
+            }
+        }
+
+        .action-button:active,
+        .download-button:active,
+        .sponsor-button:active {
             transform: scale(1);
         }
 
@@ -81,45 +131,118 @@
             width: 100%;
         }
 
+        .blog-container {
+            width: 90%;
+            max-width: 960px;
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #222;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.7);
+            text-align: justify;
+            line-height: 1.6;
+            display: none;
+        }
+
+        .blog-title {
+            font-size: 24px;
+            color: #e60000;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .advertisement {
+            width: 90%;
+            max-width: 960px;
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #444;
+            border-radius: 8px;
+            text-align: center;
+            color: #ddd;
+        }
+
+        .advertisement h2 {
+            font-size: 22px;
+            color: #fff;
+        }
+
+        .container {
+            padding: 20px;
+            max-width: 960px;
+            width: 100%;
+            box-sizing: border-box;
+        }
     </style>
 </head>
 
 <body>
-    <!-- Video Player Container -->
-    <div class="video-container">
-        <video id="my-player" class="video-js vjs-fluid vjs-big-play-centered video-player" controls preload="auto" data-setup='{
-                "playbackRates": [0.5, 1, 1.5, 2],
-                "controlBar": {
-                    "pictureInPictureToggle": true
-                }
-            }'>
-            <source id="video-src" src="" type="video/mp4">
-            </source>
-            <p class="vjs-no-js">
-                To view this video, please enable JavaScript and consider upgrading to a
-                web browser that
-                <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>.
-            </p>
-        </video>
-    </div>
+    <!-- Header with Logo -->
+    <header>
+        <!-- Logo (Adjust the 'src' to your logo image file path) -->
+        <img src="https://retrivedmods.neocities.org/homie18+.jpeg" alt="Logo" class="logo">
+        HomieStreamer
+    </header>
 
-    <!-- Video Controls -->
-    <div class="buttons-container">
-        <button class="action-button" onclick="openInVLC()">Play in VLC</button>
-        <button class="action-button" onclick="openInMXPlayer()">Play in MX Player</button>
-        <select class="quality-button" onchange="changeQuality(event)">
-            <option value="high">High Quality</option>
-            <option value="medium">Medium Quality</option>
-            <option value="low">Low Quality</option>
-        </select>
-        <select id="audio-tracks" class="action-button" onchange="changeAudioTrack(event)">
-        </select>
-        <button class="download-button" onclick="downloadVideo()">Download Video</button>
+    <div class="container">
+        <!-- Video Player Container -->
+        <div class="video-container">
+            <video id="my-player" class="video-js vjs-fluid vjs-big-play-centered video-player" controls preload="auto" data-setup='{
+                    "playbackRates": [0.5, 1, 1.5, 2],
+                    "controlBar": {
+                        "pictureInPictureToggle": true
+                    }
+                }'>
+                <source id="video-src" src="" type="video/mp4">
+                </source>
+                <p class="vjs-no-js">
+                    To view this video, please enable JavaScript and consider upgrading to a
+                    web browser that
+                    <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>.
+                </p>
+            </video>
+        </div>
+
+        <!-- Video Controls -->
+        <div class="buttons-container">
+            <button class="action-button" onclick="openInVLC()">Play in VLC</button>
+            <button class="action-button" onclick="openInMXPlayer()">Play in MX Player</button>
+            <button class="download-button" onclick="downloadVideo()">Download Video</button>
+            <button class="sponsor-button" onclick="becomeSponsor()">Become a Sponsor</button>
+        </div>
+
+        <!-- Random Blog Section -->
+        <div id="blog1" class="blog-container">
+            <p class="blog-title">The Future of Streaming: A Revolutionary Experience</p>
+            <p>
+                As we move into an era dominated by digital content, streaming platforms have quickly become the primary means of entertainment for millions of people around the world...
+            </p>
+        </div>
+
+        <div id="blog2" class="blog-container">
+            <p class="blog-title">How Streaming Services are Evolving</p>
+            <p>
+                Streaming services have rapidly become the go-to way of consuming entertainment in today’s world. As new technologies evolve, they continue to change how we view and interact...
+            </p>
+        </div>
+
+        <div id="blog3" class="blog-container">
+            <p class="blog-title">Virtual Reality and the Next Step in Streaming</p>
+            <p>
+                Virtual Reality (VR) is a rapidly growing field with applications spanning industries like gaming, education, and healthcare. But what about entertainment?
+            </p>
+        </div>
+
+        <!-- Advertisement Section -->
+        <div class="advertisement">
+            <h2>Your Advertisement Here</h2>
+            <p>Get in touch with us to promote your brand.</p>
+        </div>
     </div>
 
     <!-- Footer -->
     <footer>
-        Powered by TG Drive | Advanced Video Player
+        Powered by HomieLinkz | Video Streaming Site
     </footer>
 
     <!-- JavaScript -->
@@ -130,30 +253,10 @@
 
         const videoElement = document.getElementById('my-player');
         const videoSource = document.getElementById('video-src');
-        const audioTracksDropdown = document.getElementById('audio-tracks');
 
         // Set the video source URL from the query string
         videoSource.src = videoUrl;
         videoElement.load();
-
-        // Populate audio tracks dynamically
-        videoElement.addEventListener('loadedmetadata', () => {
-            const tracks = videoElement.audioTracks;
-            if (tracks) {
-                for (let i = 0; i < tracks.length; i++) {
-                    const track = tracks[i];
-                    const option = document.createElement('option');
-                    option.value = i;
-                    option.textContent = track.label || `Track ${i + 1}`;
-                    audioTracksDropdown.appendChild(option);
-                }
-            } else {
-                const option = document.createElement('option');
-                option.textContent = 'No audio tracks available';
-                option.disabled = true;
-                audioTracksDropdown.appendChild(option);
-            }
-        });
 
         // Play Video in VLC
         function openInVLC() {
@@ -165,30 +268,6 @@
             window.open('mxplayer://' + videoUrl, '_blank');
         }
 
-        // Change Video Quality
-        function changeQuality(event) {
-            const selectedQuality = event.target.value;
-            if (selectedQuality === 'high') {
-                videoSource.src = videoUrl;
-            } else if (selectedQuality === 'medium') {
-                videoSource.src = videoUrl.replace('.mp4', '_medium.mp4');
-            } else if (selectedQuality === 'low') {
-                videoSource.src = videoUrl.replace('.mp4', '_low.mp4');
-            }
-            videoElement.load();
-        }
-
-        // Change Audio Track
-        function changeAudioTrack(event) {
-            const selectedTrackIndex = parseInt(event.target.value, 10);
-            const tracks = videoElement.audioTracks;
-            if (tracks) {
-                for (let i = 0; i < tracks.length; i++) {
-                    tracks[i].enabled = (i === selectedTrackIndex);
-                }
-            }
-        }
-
         // Download Video
         function downloadVideo() {
             const link = document.createElement('a');
@@ -196,6 +275,26 @@
             link.download = videoUrl.split('/').pop();
             link.click();
         }
+
+        // Become a Sponsor
+        function becomeSponsor() {
+            window.location.href = "https://www.example.com/sponsor";
+        }
+
+        // Randomize blog post display
+        function displayRandomBlog() {
+            const blogs = ['blog1', 'blog2', 'blog3'];
+            const randomBlog = blogs[Math.floor(Math.random() * blogs.length)];
+
+            blogs.forEach(blog => {
+                document.getElementById(blog).style.display = 'none'; // Hide all blogs
+            });
+
+            document.getElementById(randomBlog).style.display = 'block'; // Show the selected blog
+        }
+
+        // Display a random blog on page load
+        window.onload = displayRandomBlog;
     </script>
 </body>
 
