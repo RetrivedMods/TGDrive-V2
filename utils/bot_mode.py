@@ -132,18 +132,6 @@ async def set_folder_callback(client: Client, callback_query: Message):
 
 
 @main_bot.on_message(
-    filters.command("current_folder")
-    & filters.private
-    & filters.user(config.TELEGRAM_ADMIN_IDS),
-)
-async def current_folder_handler(client: Client, message: Message):
-    global BOT_MODE
-
-    await message.reply_text(f"Current Folder: {BOT_MODE.current_folder_name}")
-
-
-# Handling when any file is sent to the bot
-@main_bot.on_message(
     filters.private
     & filters.user(config.TELEGRAM_ADMIN_IDS)
     & (
@@ -157,7 +145,10 @@ async def current_folder_handler(client: Client, message: Message):
 async def file_handler(client: Client, message: Message):
     global BOT_MODE, DRIVE_DATA
 
+    # Copy the file message to the storage channel, but don't include any text in the copied message
     copied_message = await message.copy(config.STORAGE_CHANNEL)
+
+    # Get the file object from the copied message (it could be a document, video, audio, etc.)
     file = (
         copied_message.document
         or copied_message.video
@@ -166,22 +157,31 @@ async def file_handler(client: Client, message: Message):
         or copied_message.sticker
     )
 
+    # Get the file size and other details
+    file_size = file.file_size
+    file_name = file.file_name
+    file_type = file.mime_type if hasattr(file, 'mime_type') else "Unknown"
+
+    # Store the file data in the drive
     DRIVE_DATA.new_file(
         BOT_MODE.current_folder,
-        file.file_name,
+        file_name,
         copied_message.id,
-        file.file_size,
+        file_size,
     )
 
-    await message.reply_text(
-        f"""✅ File Uploaded Successfully To Your TG Drive Website 
-        https://jolly-lobster-thunderlinks-43a7df8c.koyeb.app/
-        
-                             
-**File Name:** {file.file_name}
+    # Format the response message with the file details
+    response_message = f"""✅ **File Uploaded Successfully To Your TG Drive Website** 
+    [View File Here](https://jolly-lobster-thunderlinks-43a7df8c.koyeb.app/)
+
+**File Name:** {file_name}
+**File Size:** {file_size / (1024 * 1024):.2f} MB
+**File Type:** {file_type}
 **Folder:** {BOT_MODE.current_folder_name}
 """
-    )
+
+    # Send the response message with file details
+    await message.reply_text(response_message)
 
 
 async def start_bot_mode(d, b):
