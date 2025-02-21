@@ -188,7 +188,7 @@ async def file_handler(client: Client, message: Message):
     📂 **File Type:** {file.mime_type}
 
     🔗 **Click below to view the uploaded file:**
-    [View File Here](https://jolly-lobster-thunderlinks-43a7df8c.koyeb.app/?path=/{BOT_MODE.current_folder}/{file.file_name})
+    [View File Here](https://jolly-lobster-thunderlinks-43a7df8c.koyeb.app/)
 
     🎉 Your file has been successfully uploaded to **Homie Uploader**! Enjoy sharing your content! 🎉
     """
