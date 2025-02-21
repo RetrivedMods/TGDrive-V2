@@ -1,24 +1,28 @@
 import asyncio
 from pyrogram import Client, filters
-from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
+from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, Sticker
 import config
 from utils.logger import Logger
 from pathlib import Path
-from datetime import datetime
 
 logger = Logger(__name__)
 
-START_CMD = """🚀 **Welcome To TG Drive's Bot Mode**
+START_CMD = """🚀 **Welcome to Homie Uploader Bot!**
 
-You can use this bot to upload files to your TG Drive website directly instead of doing it from the website.
+You can upload files directly to your **Homie Uploader** by interacting with this bot.
 
-🗄 **Commands:**
-/set_folder - Set folder for file uploads
-/current_folder - Check current folder
+📄 **Commands:**
+/set_folder - Set a folder for file uploads
+/current_folder - Check your current folder
 
-📤 **How To Upload Files:** Simply send a file to this bot, and it will be uploaded to your TG Drive website. You can also set a folder for file uploads using /set_folder command.
+📤 **How to upload files:** Simply send any file (document, image, video, etc.) and it will be uploaded to your **Homie Uploader**.
 
-Read more about [TG Drive's Bot Mode](https://github.com/TechShreyash/TGDrive#tg-drives-bot-mode)
+🔗 You can view your uploaded files via the link below:
+[Homie Uploader](https://github.com/YourUsername/HomieUploader)
+
+If you need more information, visit our [Homie Uploader Bot Mode Guide](https://github.com/YourUsername/HomieUploader#bot-mode).
+
+Happy uploading! 🚀
 """
 
 SET_FOLDER_PATH_CACHE = {}  # Cache to store folder path for each folder id
@@ -133,6 +137,18 @@ async def set_folder_callback(client: Client, callback_query: Message):
 
 
 @main_bot.on_message(
+    filters.command("current_folder")
+    & filters.private
+    & filters.user(config.TELEGRAM_ADMIN_IDS),
+)
+async def current_folder_handler(client: Client, message: Message):
+    global BOT_MODE
+
+    await message.reply_text(f"Current Folder: {BOT_MODE.current_folder_name}")
+
+
+# Handling when any file is sent to the bot
+@main_bot.on_message(
     filters.private
     & filters.user(config.TELEGRAM_ADMIN_IDS)
     & (
@@ -146,51 +162,45 @@ async def set_folder_callback(client: Client, callback_query: Message):
 async def file_handler(client: Client, message: Message):
     global BOT_MODE, DRIVE_DATA
 
-    # Get the file object from the original message (it could be a document, video, audio, etc.)
+    # Send a sticker as a placeholder (Optional: Replace with your desired sticker file_id)
+    await message.reply_sticker("CAACAgUAAxkBAAEB8M1j7M5uS3FJ0Pgy_jdQZtMfZYvh7wACygADyJjXAx1t0c2P7n5nFwQ")
+
+    # Wait for 1 second before sending the success message
+    await asyncio.sleep(1)
+
+    copied_message = await message.copy(config.STORAGE_CHANNEL)
     file = (
-        message.document
-        or message.video
-        or message.audio
-        or message.photo
-        or message.sticker
+        copied_message.document
+        or copied_message.video
+        or copied_message.audio
+        or copied_message.photo
+        or copied_message.sticker
     )
 
-    # Get the file details
-    file_name = file.file_name
-    file_size = file.file_size
-    file_type = file.mime_type if hasattr(file, 'mime_type') else "Unknown"
-    upload_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-    # Send the file to storage channel without caption
-    if file:
-        if file.file_id:
-            await client.send_document(
-                config.STORAGE_CHANNEL,
-                file.file_id,
-                caption=None  # No caption is added here
-            )
-
-    # Store the file data in the drive
     DRIVE_DATA.new_file(
         BOT_MODE.current_folder,
-        file_name,
-        message.id,
-        file_size,
+        file.file_name,
+        copied_message.id,
+        file.file_size,
     )
 
-    # Format the response message with file details (including file size, name, type, folder, and time)
-    response_message = f"""✅ **File Uploaded Successfully To Your TG Drive Website** 
-[View File Here](https://jolly-lobster-thunderlinks-43a7df8c.koyeb.app/)
+    # Create a formatted message
+    success_message = f"""
+    ✅ **File Uploaded Successfully to Your Homie Uploader!**
 
-**File Name:** {file_name}
-**File Size:** {file_size / (1024 * 1024):.2f} MB
-**File Type:** {file_type}
-**Folder:** {BOT_MODE.current_folder_name}
-**Uploaded On:** {upload_time}
-"""
+    **File Name:** {file.file_name}
+    **Folder:** {BOT_MODE.current_folder_name}
+    **File Size:** {file.file_size / 1024:.2f} KB
+    **File Type:** {file.mime_type}
 
-    # Send the response message to the user with file details
-    await message.reply_text(response_message)
+    📥 **Click below to view the file:**
+    [View File](https://jolly-lobster-thunderlinks-43a7df8c.koyeb.app/?path=/{BOT_MODE.current_folder}/{file.file_name})
+    """
+
+    # Delete the sticker and send the success message
+    await message.delete()
+
+    await message.reply_text(success_message)
 
 
 async def start_bot_mode(d, b):
@@ -201,9 +211,8 @@ async def start_bot_mode(d, b):
     logger.info("Starting Main Bot")
     await main_bot.start()
 
-    
     await main_bot.send_message(
-        config.STORAGE_CHANNEL, "Main Bot Started -> TG Drive's Bot Mode Enabled"
+        config.STORAGE_CHANNEL, "Main Bot Started -> Homie Uploader Bot Mode Enabled"
     )
     logger.info("Main Bot Started")
-    logger.info("TG Drive's Bot Mode Enabled")
+    logger.info("Homie Uploader Bot Mode Enabled")
