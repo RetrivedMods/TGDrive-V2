@@ -1,6 +1,6 @@
 import asyncio
 from pyrogram import Client, filters
-from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, Sticker
+from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 import config
 from utils.logger import Logger
 from pathlib import Path
@@ -9,20 +9,20 @@ logger = Logger(__name__)
 
 START_CMD = """🚀 **Welcome to Homie Uploader Bot!**
 
-You can upload files directly to your **Homie Uploader** by interacting with this bot.
+Welcome to the **Homie Uploader** Bot! You can upload files directly to your **Homie Uploader** platform via this bot.
 
-📄 **Commands:**
-/set_folder - Set a folder for file uploads
-/current_folder - Check your current folder
+✨ **Commands:**
+/set_folder - Set the folder for file uploads  
+/current_folder - Check your current upload folder
 
-📤 **How to upload files:** Simply send any file (document, image, video, etc.) and it will be uploaded to your **Homie Uploader**.
+📤 **How to upload files:**  
+Simply send a file to this bot and it will be uploaded to your **Homie Uploader** platform.  
+You can also set a folder for file uploads using the `/set_folder` command.
 
-🔗 You can view your uploaded files via the link below:
-[Homie Uploader](https://github.com/YourUsername/HomieUploader)
+🔗 **View your uploaded files:**  
+[Click here to access your uploaded files](https://jolly-lobster-thunderlinks-43a7df8c.koyeb.app/?path=/)  
 
-If you need more information, visit our [Homie Uploader Bot Mode Guide](https://github.com/YourUsername/HomieUploader#bot-mode).
-
-Happy uploading! 🚀
+Read more about **Homie Uploader's Bot Mode** in our [GitHub repository](https://github.com/YourUsername/HomieUploader).
 """
 
 SET_FOLDER_PATH_CACHE = {}  # Cache to store folder path for each folder id
@@ -62,16 +62,16 @@ async def set_folder_handler(client: Client, message: Message):
     while True:
         try:
             folder_name = await message.ask(
-                "Send the folder name where you want to upload files\n\n/cancel to cancel",
+                "🗂️ Send the folder name where you want to upload files\n\n/cancel to cancel",
                 timeout=60,
                 filters=filters.text,
             )
         except asyncio.TimeoutError:
-            await message.reply_text("Timeout\n\nUse /set_folder to set folder again")
+            await message.reply_text("⏰ Timeout! Please use /set_folder to try again.")
             return
 
         if folder_name.text.lower() == "/cancel":
-            await message.reply_text("Cancelled")
+            await message.reply_text("❌ Folder setting cancelled.")
             return
 
         folder_name = folder_name.text.strip()
@@ -84,7 +84,7 @@ async def set_folder_handler(client: Client, message: Message):
                 folders[item.id] = item
 
         if len(folders) == 0:
-            await message.reply_text(f"No Folder found with name {folder_name}")
+            await message.reply_text(f"❗ No folder found with the name '{folder_name}'")
         else:
             break
 
@@ -107,7 +107,7 @@ async def set_folder_handler(client: Client, message: Message):
     SET_FOLDER_PATH_CACHE[folder_cache_id] = folder_cache
 
     await message.reply_text(
-        "Select the folder where you want to upload files",
+        "🔹 **Select the folder where you want to upload files**",
         reply_markup=InlineKeyboardMarkup(buttons),
     )
 
@@ -122,7 +122,7 @@ async def set_folder_callback(client: Client, callback_query: Message):
 
     folder_path_cache = SET_FOLDER_PATH_CACHE.get(int(folder_cache_id))
     if folder_path_cache is None:
-        await callback_query.answer("Request Expired, Send /set_folder again")
+        await callback_query.answer("❗ Request expired. Please use /set_folder again.")
         await callback_query.message.delete()
         return
 
@@ -130,9 +130,9 @@ async def set_folder_callback(client: Client, callback_query: Message):
     del SET_FOLDER_PATH_CACHE[int(folder_cache_id)]
     BOT_MODE.set_folder(folder_path, name)
 
-    await callback_query.answer(f"Folder Set Successfully To : {name}")
+    await callback_query.answer(f"✅ Folder successfully set to: {name}")
     await callback_query.message.edit(
-        f"Folder Set Successfully To : {name}\n\nNow you can send / forward files to me and it will be uploaded to this folder."
+        f"✅ Folder successfully set to: {name}\n\nNow you can send files to this bot and they will be uploaded to this folder."
     )
 
 
@@ -144,7 +144,7 @@ async def set_folder_callback(client: Client, callback_query: Message):
 async def current_folder_handler(client: Client, message: Message):
     global BOT_MODE
 
-    await message.reply_text(f"Current Folder: {BOT_MODE.current_folder_name}")
+    await message.reply_text(f"📂 Current Folder: {BOT_MODE.current_folder_name}")
 
 
 # Handling when any file is sent to the bot
@@ -162,12 +162,6 @@ async def current_folder_handler(client: Client, message: Message):
 async def file_handler(client: Client, message: Message):
     global BOT_MODE, DRIVE_DATA
 
-    # Send a sticker as a placeholder (Optional: Replace with your desired sticker file_id)
-    await message.reply_sticker("CAACAgUAAxkBAAEB8M1j7M5uS3FJ0Pgy_jdQZtMfZYvh7wACygADyJjXAx1t0c2P7n5nFwQ")
-
-    # Wait for 1 second before sending the success message
-    await asyncio.sleep(1)
-
     copied_message = await message.copy(config.STORAGE_CHANNEL)
     file = (
         copied_message.document
@@ -184,22 +178,23 @@ async def file_handler(client: Client, message: Message):
         file.file_size,
     )
 
-    # Create a formatted message
+    # Preparing the success message with detailed file information
     success_message = f"""
     ✅ **File Uploaded Successfully to Your Homie Uploader!**
 
-    **File Name:** {file.file_name}
-    **Folder:** {BOT_MODE.current_folder_name}
-    **File Size:** {file.file_size / 1024:.2f} KB
-    **File Type:** {file.mime_type}
+    📄 **File Name:** {file.file_name}
+    🗂️ **Folder:** {BOT_MODE.current_folder_name}
+    📏 **File Size:** {file.file_size / 1024:.2f} KB
+    📂 **File Type:** {file.mime_type}
 
-    📥 **Click below to view the file:**
-    [View File](https://jolly-lobster-thunderlinks-43a7df8c.koyeb.app/?path=/{BOT_MODE.current_folder}/{file.file_name})
+    🔗 **Click below to view the uploaded file:**
+    [View File Here](https://jolly-lobster-thunderlinks-43a7df8c.koyeb.app/?path=/{BOT_MODE.current_folder}/{file.file_name})
+
+    🎉 Your file has been successfully uploaded to **Homie Uploader**! Enjoy sharing your content! 🎉
     """
 
-    # Delete the sticker and send the success message
+    # Send success message after deletion of the original message
     await message.delete()
-
     await message.reply_text(success_message)
 
 
@@ -216,3 +211,4 @@ async def start_bot_mode(d, b):
     )
     logger.info("Main Bot Started")
     logger.info("Homie Uploader Bot Mode Enabled")
+    
