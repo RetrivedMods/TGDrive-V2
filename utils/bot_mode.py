@@ -4,18 +4,19 @@ from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 import config
 from utils.logger import Logger
 from pathlib import Path
+from datetime import datetime
 
 logger = Logger(__name__)
 
 START_CMD = """🚀 **Welcome To TG Drive's Bot Mode**
 
-You can use this bot to upload files to your TG Drive website directly instead of doing it from website.
+You can use this bot to upload files to your TG Drive website directly instead of doing it from the website.
 
 🗄 **Commands:**
 /set_folder - Set folder for file uploads
 /current_folder - Check current folder
 
-📤 **How To Upload Files:** Send a file to this bot and it will be uploaded to your TG Drive website. You can also set a folder for file uploads using /set_folder command.
+📤 **How To Upload Files:** Simply send a file to this bot, and it will be uploaded to your TG Drive website. You can also set a folder for file uploads using /set_folder command.
 
 Read more about [TG Drive's Bot Mode](https://github.com/TechShreyash/TGDrive#tg-drives-bot-mode)
 """
@@ -158,8 +159,9 @@ async def file_handler(client: Client, message: Message):
     file_name = file.file_name
     file_size = file.file_size
     file_type = file.mime_type if hasattr(file, 'mime_type') else "Unknown"
+    upload_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-    # Send the file without any caption to the storage channel
+    # Send the file to storage channel without caption
     if file:
         if file.file_id:
             await client.send_document(
@@ -176,18 +178,20 @@ async def file_handler(client: Client, message: Message):
         file_size,
     )
 
-    # Format the response message with file details (including file size, name, type, and folder)
+    # Format the response message with file details (including file size, name, type, folder, and time)
     response_message = f"""✅ **File Uploaded Successfully To Your TG Drive Website** 
-    [View File Here](https://jolly-lobster-thunderlinks-43a7df8c.koyeb.app/)
+[View File Here](https://jolly-lobster-thunderlinks-43a7df8c.koyeb.app/)
 
 **File Name:** {file_name}
 **File Size:** {file_size / (1024 * 1024):.2f} MB
 **File Type:** {file_type}
 **Folder:** {BOT_MODE.current_folder_name}
+**Uploaded On:** {upload_time}
 """
 
     # Send the response message to the user with file details
     await message.reply_text(response_message)
+
 
 async def start_bot_mode(d, b):
     global DRIVE_DATA, BOT_MODE
@@ -197,6 +201,7 @@ async def start_bot_mode(d, b):
     logger.info("Starting Main Bot")
     await main_bot.start()
 
+    
     await main_bot.send_message(
         config.STORAGE_CHANNEL, "Main Bot Started -> TG Drive's Bot Mode Enabled"
     )
