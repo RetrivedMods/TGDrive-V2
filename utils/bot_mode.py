@@ -7,22 +7,22 @@ from pathlib import Path
 
 logger = Logger(__name__)
 
-START_CMD = """🚀 **Welcome to Homie Uploader Bot!**
+START_CMD = """🚀 **Welcome to FileUpload Bot!**
 
-Welcome to the **Homie Uploader** Bot! You can upload files directly to your **Homie Uploader** platform via this bot.
+Welcome to the **FileUpload** Bot! You can upload files directly to your **File Uploader** platform via this bot.
 
 ✨ **Commands:**
 /set_folder - Set the folder for file uploads  
 /current_folder - Check your current upload folder
 
 📤 **How to upload files:**  
-Simply send a file to this bot and it will be uploaded to your **Homie Uploader** platform.  
+Simply send a file to this bot and it will be uploaded to your **FileUpload** platform.  
 You can also set a folder for file uploads using the `/set_folder` command.
 
 🔗 **View your uploaded files:**  
-[Click here to access your uploaded files](https://jolly-lobster-thunderlinks-43a7df8c.koyeb.app/?path=/)  
+[Click here to access your uploaded files](https://zany-leonie-thunderlinks-0733fa02.koyeb.app/?path=/)  
 
-Read more about **Homie Uploader's Bot Mode** in our [GitHub repository](https://github.com/YourUsername/HomieUploader).
+Read more about **Homie Uploader's Bot Mode** in our [GitHub repository](https://github.com/RetrivedMods.TGDive).
 """
 
 SET_FOLDER_PATH_CACHE = {}  # Cache to store folder path for each folder id
