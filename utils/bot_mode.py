@@ -22,7 +22,7 @@ You can also set a folder for file uploads using the `/set_folder` command.
 🔗 **View your uploaded files:**  
 [Click here to access your uploaded files](https://zany-leonie-thunderlinks-0733fa02.koyeb.app/?path=/)  
 
-Read more about **Homie Uploader's Bot Mode** in our [GitHub repository](https://github.com/RetrivedMods.TGDive).
+Read more about **The Uploader's Bot Mode** in our [GitHub repository](https://github.com/RetrivedMods.TGDive).
 """
 
 SET_FOLDER_PATH_CACHE = {}  # Cache to store folder path for each folder id
