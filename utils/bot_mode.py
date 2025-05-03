@@ -180,7 +180,7 @@ async def file_handler(client: Client, message: Message):
 
     # Preparing the success message with detailed file information
     success_message = f"""
-    ✅ **File Uploaded Successfully to Your Homie Uploader!**
+    ✅ **File Uploaded Successfully to Your Bot Uploader!**
 
     📄 **File Name:** {file.file_name}
     🗂️ **Folder:** {BOT_MODE.current_folder_name}
@@ -188,9 +188,9 @@ async def file_handler(client: Client, message: Message):
     📂 **File Type:** {file.mime_type}
 
     🔗 **Click below to view the uploaded file:**
-    [View File Here](https://jolly-lobster-thunderlinks-43a7df8c.koyeb.app/)
+    [View File Here](https://zany-leonie-thunderlinks-0733fa02.koyeb.app/?path=/)
 
-    🎉 Your file has been successfully uploaded to **Homie Uploader**! Enjoy sharing your content! 🎉
+    🎉 Your file has been successfully uploaded to **The Uploader**! Enjoy sharing your content! 🎉
     """
 
     # Send success message after deletion of the original message
