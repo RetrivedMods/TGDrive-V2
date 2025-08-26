@@ -20,7 +20,7 @@ Simply send a file to this bot and it will be uploaded to your **FileUpload** pl
 You can also set a folder for file uploads using the `/set_folder` command.
 
 🔗 **View your uploaded files:**  
-[Click here to access your uploaded files](https://zany-leonie-thunderlinks-0733fa02.koyeb.app/?path=/)  
+[Click here to access your uploaded files](https://yappiest-velma-tgdrives-d4ea9a8d.koyeb.app/)  
 
 Read more about **The Uploader's Bot Mode** in our [GitHub repository](https://github.com/RetrivedMods.TGDive).
 """
